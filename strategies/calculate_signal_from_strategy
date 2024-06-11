@@ -1,0 +1,25 @@
+def get_signal(data, short_window=50, long_window=200):
+    """
+    Generates buy/sell signals based on moving average crossover.
+
+    Args:
+        data (pd.DataFrame): DataFrame containing price data (e.g., 'Close')
+        short_window (int, optional): Short window for moving average. Defaults to 50.
+        long_window (int, optional): Long window for moving average. Defaults to 200.
+
+    Returns:
+        pd.Series: Series containing 1 for buy, -1 for sell, 0 for hold.
+    """
+
+    data['short_ma'] = data['Close'].rolling(window=short_window).mean()
+    data['long_ma'] = data['Close'].rolling(window=long_window).mean()
+    signals = np.where(data['short_ma'] > data['long_ma'], 1, 0)
+    signals = signals.diff()  # Generate buy/sell signals on crossover changes
+
+    return signals
+
+def generate_signals(data, model=None):  # Modify based on your strategy
+  buy_signals = []
+  sell_signals = []
+
+

@@ -1,0 +1,43 @@
+def calculate_position_size(account_balance, risk_per_trade, entry_price, stop_loss):
+    """
+    Calculates position size based on fixed fractional approach.
+
+    Args:
+        account_balance (float): Account balance.
+        risk_per_trade (float): Maximum risk (% of account balance) per trade.
+        entry_price (float): Entry price of the asset.
+        stop_loss (float): Stop-loss price.
+
+    Returns:
+        int: Number of shares to buy/sell.
+    """
+
+    dollar_risk = account_balance * risk_per_trade / 100
+    position_size = int(dollar_risk / (entry_price - stop_loss))
+
+    return position_size
+
+
+def subset_data(df = df_history.copy(), symbol = MY_CURRENCIES[0]):
+    # Make a copy of the original dataframe
+    df = df[df['symbol'] == symbol]
+    # Remove unnecessary columns and only show the last 30 days
+    df = df.drop(['volume','time','year','month','day'], axis = 1)
+    # Columns must be in a specific order for the candlestick chart (OHLC)
+    df = df[['date', 'open', 'high', 'low', 'close']]
+    # Date must also be in a specific format for MPL
+    #df['date'] = df['date'].apply(mpl_dates.date2num)
+    #df = df.astype(float)
+    df = df.set_index('date')
+    df = df.sort_index(ascending=True)
+      # Calculate daily returns
+    df['daily_returns'] = df['close'].pct_change()
+    # Add simple moving average for 5 days
+    #df['SMA5'] = df['close'].rolling(5).mean()
+    return df
+
+
+df_temp = subset_data(symbol = 'BTC-USD')
+df_temp.head() 
+
+### run strategy on df_temp
